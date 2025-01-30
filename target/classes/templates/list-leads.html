@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <style>
+        :root {
+            --ethereal-ivory: #E4E4DE;
+            --sophisticated-sage: #C4C5BA;
+            --timeless-noir: #1B1B1B;
+            --muted-moss: #595f39;
+        }
+        body {
+            background-color: var(--ethereal-ivory);
+        }
+        .navbar, .footer {
+            background-color: var(--timeless-noir);
+        }
+        .footer {
+            padding: 1rem 0;
+            color: var(--ethereal-ivory);
+        }
+        .sidebar {
+            background-color: var(--timeless-noir);
+            color: var(--ethereal-ivory);
+            width: 250px;
+        }
+        .sidebar a {
+            color: var(--sophisticated-sage);
+            text-decoration: none;
+            display: block;
+            padding: 15px;
+            transition: background-color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: var(--sophisticated-sage);
+            color: var(--timeless-noir);
+        }
+        .content {
+            padding: 20px;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: var(--sophisticated-sage);
+        }
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: var(--ethereal-ivory);
+        }
+        .btn-primary {
+            background-color: var(--muted-moss);
+            border-color: var(--muted-moss);
+        }
+        .btn-primary:hover {
+            background-color: var(--timeless-noir);
+            border-color: var(--timeless-noir);
+        }
+        .btn-warning {
+            background-color: var(--sophisticated-sage);
+            border-color: var(--sophisticated-sage);
+            color: var(--timeless-noir);
+        }
+        .btn-warning:hover {
+            background-color: var(--timeless-noir);
+            border-color: var(--timeless-noir);
+            color: var(--ethereal-ivory);
+        }
+        .btn-danger {
+            background-color: var(--timeless-noir);
+            border-color: var(--timeless-noir);
+        }
+        .btn-danger:hover {
+            background-color: var(--muted-moss);
+            border-color: var(--muted-moss);
+        }
+        #sidebar-wrapper {
+            display: none;
+        }
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding-right: 40px;
+        }
+        .search-box .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <button class="btn btn-dark" id="menu-toggle">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand ms-2" href="#">SimplyCRM</a>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <div class="ms-auto search-box">
+                <input type="text" class="form-control" placeholder="Search...">
+                <span class="search-icon">
+                    <i class="bi bi-search"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="d-flex">
+    <div class="sidebar bg-dark" id="sidebar-wrapper">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/opportunities">Opportunity</a>
+        <a href="/pipeline-stages">Sales Pipeline</a>
+        <a href="/reports">Reports</a>
+    </div>
+
+    <div class="content flex-grow-1">
+        <h1 class="pb-2 border-bottom row">
+            <span class="col-12 col-sm-6">Leads</span>
+            <span class="col-12 col-sm-6 text-sm-end">
+                <a href="/leads/add-lead" class="btn btn-primary">Add New Lead</a>
+            </span>
+        </h1>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Lead Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Lead Source</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="leadTableBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer class="footer text-center mt-auto">
+    <div class="container">
+        <p class="mb-0">&copy;
+            <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+            SimplyCRM
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById("menu-toggle").addEventListener("click", function() {
+        var sidebar = document.getElementById("sidebar-wrapper");
+        if (sidebar.style.display === "none") {
+            sidebar.style.display = "block";
+        } else {
+            sidebar.style.display = "none";
+        }
+    });
+
+    function loadLeadData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/leads', true);
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var tableBody = document.getElementById('leadTableBody');
+                tableBody.innerHTML = ''; // Clear existing table data
+
+                data.forEach(function(lead) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${lead.id}</td>
+                    <td>${lead.leadName}</td>
+                    <td>${lead.email}</td>
+                    <td>${lead.phone}</td>
+                    <td>
+                        <select onchange="updateLeadStatus(${lead.id}, this.value)">
+                            <option value="NEW" ${lead.status === 'NEW' ? 'selected' : ''}>New</option>
+                            <option value="CONTACTED" ${lead.status === 'CONTACTED' ? 'selected' : ''}>Contacted</option>
+                            <option value="QUALIFIED" ${lead.status === 'QUALIFIED' ? 'selected' : ''}>Qualified</option>
+                            <option value="PROPOSING" ${lead.status === 'PROPOSING' ? 'selected' : ''}>Proposing</option>
+                            <option value="NEGOTIATING" ${lead.status === 'NEGOTIATING' ? 'selected' : ''}>Negotiating</option>
+                            <option value="WON" ${lead.status === 'WON' ? 'selected' : ''}>Won</option>
+                            <option value="ONBOARDED" ${lead.status === 'ONBOARDED' ? 'selected' : ''}>Onboarded</option>
+                            <option value="LOST" ${lead.status === 'LOST' ? 'selected' : ''}>Lost</option>
+                        </select>
+                    </td>
+                    <td>${lead.leadSource}</td>
+                    <td>
+                        <a href="/leads/edit-lead/${lead.id}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="#" onclick="confirmDelete(${lead.id})" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                console.error('Error fetching lead data:', xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function() {
+            console.error('Request error...');
+        };
+
+        xhr.send();
+    }
+
+    function updateLeadStatus(leadId, newStatus) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', `/api/leads/${leadId}/updatePipelineStage`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                console.log('Lead status updated successfully');
+                loadLeadData();  // Optionally refresh the data
+            } else {
+                console.error('Error updating lead status:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            console.error('Request error...');
+        };
+        xhr.send(JSON.stringify({ status: newStatus }));
+    }
+
+    // Adapted confirmDelete function for leads
+    function confirmDelete(leadId) {
+        if (confirm("Are you sure you want to delete this lead?")) {
+            // Using fetch to send a DELETE request
+            fetch(`/api/leads/${leadId}/delete`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // If delete was successful, reload the data or remove the row from the table
+                        alert("Lead deleted successfully.");
+                        // Reload the page or remove the row dynamically from the table
+                        location.reload();  // Simplest way to update the UI
+                    } else {
+                        // Handle errors if the server responds with a status code outside the range 200-299
+                        console.error('Failed to delete the lead. Status:', response.status);
+                        alert("Failed to delete the lead.");
+                    }
+                })
+                .catch(error => {
+                    // Handle network errors
+                    console.error('Error deleting lead:', error);
+                    alert("Network error, couldn't delete the lead.");
+                });
+        }
+    }
+
+    // Load data when the page loads
+    window.onload = loadLeadData;
+</script>
+</body>
+</html>

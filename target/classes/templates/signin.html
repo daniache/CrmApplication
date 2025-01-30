@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login Form - Midnight Slate</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <style>
+        *, *:before, *:after {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* Bootstrap's default font stack */
+            background-color: #1b1b1b; /* Midnight Slate */
+            color: #e4e4de; /* Ethereal Ivory */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .background {
+            width: 430px;
+            height: 520px;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            left: 50%;
+            top: 50%;
+        }
+        .background .shape {
+            height: 200px;
+            width: 200px;
+            position: absolute;
+            border-radius: 50%;
+        }
+        .shape:first-child {
+            background: linear-gradient(#3a3a3a, #1b1b1b); /* Darker gradient */
+            left: -80px;
+            top: -80px;
+        }
+        .shape:last-child {
+            background: linear-gradient(to right, #3a3a3a, #1b1b1b); /* Darker gradient */
+            right: -30px;
+            bottom: -80px;
+        }
+        form {
+            width: 400px;
+            background-color: rgba(27, 27, 27, 0.7); /* Darker background with opacity */
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(27, 27, 27, 0.5); /* Darker border */
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6); /* Darker shadow */
+            padding: 50px 35px;
+            position: relative;
+            z-index: 1;
+        }
+        form h3 {
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 42px;
+            text-align: center;
+            color: #e4e4de; /* Ethereal Ivory */
+        }
+        label {
+            display: block;
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #e4e4de; /* Ethereal Ivory */
+        }
+        input {
+            display: block;
+            height: 50px;
+            width: 100%;
+            background-color: rgba(27, 27, 27, 0.5); /* Darker background with opacity */
+            border-radius: 3px;
+            padding: 0 10px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 300;
+            color: #e4e4de; /* Ethereal Ivory */
+        }
+        ::placeholder {
+            color: #e4e4de; /* Ethereal Ivory */
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #595f39; /* Dark Olive Green */
+            color: #e4e4de; /* Ethereal Ivory */
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e4e4de; /* Ethereal Ivory */
+        }
+        .divider::before {
+            margin-right: 10px;
+        }
+        .divider::after {
+            margin-left: 10px;
+        }
+        .divider p {
+            text-align: center;
+            font-weight: bold;
+            margin: 0;
+            color: #e4e4de; /* Ethereal Ivory */
+        }
+        .social {
+            display: flex;
+            justify-content: space-between;
+        }
+        .social a {
+            width: 150px;
+            border-radius: 3px;
+            padding: 5px 10px;
+            color: #e4e4de; /* Ethereal Ivory */
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            text-decoration: none; /* Remove underline */
+        }
+        .social a:hover {
+            opacity: 0.8; /* Slightly less intense on hover */
+        }
+        .social i {
+            margin-right: 4px;
+        }
+        .social .go {
+            background-color: #db4437; /* Google color */
+            color: #e4e4de; /* Ethereal Ivory */
+        }
+        .social .gh {
+            background-color: #333333; /* GitHub color */
+            color: #e4e4de; /* Ethereal Ivory */
+        }
+        .forgot-password {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .forgot-password a {
+            color: #e4e4de; /* Ethereal Ivory */
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="background">
+    <div class="shape"></div>
+    <div class="shape"></div>
+</div>
+<form id="loginForm">
+    <h3>Login Here</h3>
+    <label for="username">Username</label>
+    <input type="text" placeholder="Email or Username" id="username">
+    <label for="password">Password</label>
+    <input type="password" placeholder="Password" id="password">
+    <button type="submit">Log In</button>
+    <p class="forgot-password small mb-5 pb-lg-2"><a class="text" href="#!">Forgot password?</a></p>
+    <div class="divider d-flex align-items-center my-4">
+        <p class="text-center fw-bold mx-3 mb-0 text">OR</p>
+    </div>
+    <div class="social">
+        <a href="/oauth2/authorization/google" class="go"><i class="fab fa-google"></i> Google</a>
+        <a href="/oauth2/authorization/github" class="gh"><i class="fab fa-github"></i> GitHub</a>
+    </div>
+</form>
+<script src="/js/signinhandler.js"></script>
+</body>
+</html>

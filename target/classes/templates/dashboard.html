@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Dashboard</title>
+    <link rel="preload" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"></noscript>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #E4E4DE; /* Background color */
+            color: #1B1B1B; /* Text color */
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030;
+            background-color: #E4E4DE; /* Navbar color */
+        }
+        .navbar-brand {
+            color: #F39C12; /* Change color of navbar brand */
+            font-weight: bold;
+        }
+        .navbar-brand:hover {
+            color: #C4C5BA; /* Navbar text hover color */
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px; /* Adjust according to the height of the navbar */
+            left: 0;
+            width: 200px;
+            height: 100%;
+            background-color: #C4C5BA; /* Sidebar background color */
+            padding: 15px;
+            border-right: 1px solid #1B1B1B; /* Sidebar border color */
+            z-index: 1020;
+        }
+        .sidebar h7 {
+            text-align: center;
+            font-weight: bold;
+            color: #1B1B1B; /* Sidebar heading color */
+            margin-bottom: 15px;
+        }
+        .sidebar .nav-link {
+            color: #1B1B1B; /* Sidebar link color */
+        }
+        .sidebar .nav-link:hover {
+            color: #595f39; /* Sidebar link hover color */
+        }
+        .main-content {
+            margin-left: 210px; /* Adjust to the width of the sidebar */
+            margin-top: 56px; /* Adjust according to the height of the navbar */
+            padding: 20px;
+        }
+        .metric-card {
+            border: 1px solid #C4C5BA; /* Card border color */
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #E4E4DE; /* Card background color */
+            color: #1B1B1B; /* Card text color */
+        }
+        .table-responsive {
+            margin-top: 20px;
+        }
+        table.table {
+            background-color: #E4E4DE; /* Table background color */
+            color: #1B1B1B; /* Table text color */
+        }
+        table.table thead th {
+            background-color: #595f39; /* Table header background color */
+            color: #E4E4DE; /* Table header text color */
+        }
+        canvas {
+            max-width: 100%;
+            height: 200px !important;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <a class="navbar-brand" href="#">SimplyCRM</a>
+    <div class="ml-auto">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src="account-icon.png" alt="Account Icon" class="account-icon">
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/profile">Profile</a>
+                    <a class="dropdown-item" href="/settings">Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" id="logoutLink" href="/logout">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h7>Navigation</h7>
+    <ul class="nav flex-column">
+        <!-- Conditionally render the Users link only if the user has the ADMIN role -->
+        <li th:if="${roles.contains('ADMIN')}" id="usersNavItem" class="nav-item">
+            <a class="nav-link" href="/users">Users</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/opportunities">Opportunities</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/leads">Leads</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/customers">Customers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/pipeline-stages">Sales Pipeline</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Main content -->
+<div class="main-content">
+    <h1 class="my-4">CRM Dashboard</h1>
+    <div class="row">
+        <!-- Key Metrics -->
+        <div class="col-lg-2 col-md-4">
+            <div class="metric-card">
+                <h5>Leads</h5>
+                <p id="leads">123</p>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+            <div class="metric-card">
+                <h5>Customer Satisfaction</h5>
+                <p id="customer-satisfaction">95%</p>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+            <div class="metric-card">
+                <h5>Churn Rate</h5>
+                <p id="churn-rate">5%</p>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+            <div class="metric-card">
+                <h5>Customer Lifetime Value</h5>
+                <p id="clv">$5,000</p>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+            <div class="metric-card">
+                <h5>Win Rate</h5>
+                <p id="win-rate">40%</p>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+            <div class="metric-card">
+                <h5>Total Sales</h5>
+                <p id="total-sales">$150,000</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphs -->
+    <div class="row my-4">
+        <div class="col-lg-6">
+            <h3>Deals Ratio</h3>
+            <canvas id="dealsRatioChart"></canvas>
+        </div>
+        <div class="col-lg-6">
+            <h3>Customer Satisfaction</h3>
+            <canvas id="customerSatisfactionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Sales Pipeline for Leads -->
+    <div class="row my-4">
+        <div class="col-12">
+            <h3>Sales Pipeline for Leads</h3>
+            <form id="leadPipelineForm" class="form-inline">
+                <label class="my-1 mr-2" for="leadSelect">Lead</label>
+                <select class="custom-select my-1 mr-sm-2" id="leadSelect">
+                    <option selected>Choose...</option>
+                    <!-- Populate with actual lead IDs -->
+                    <option value="L1">Lead 1</option>
+                    <option value="L2">Lead 2</option>
+                </select>
+
+                <label class="my-1 mr-2" for="leadOpportunitySelect">Opportunity</label>
+                <select class="custom-select my-1 mr-sm-2" id="leadOpportunitySelect">
+                    <option selected>Choose...</option>
+                    <!-- Populate with actual opportunity IDs -->
+                    <option value="O1">Opportunity 1</option>
+                    <option value="O2">Opportunity 2</option>
+                </select>
+
+                <label class="my-1 mr-2" for="leadStageSelect">Stage</label>
+                <select class="custom-select my-1 mr-sm-2" id="leadStageSelect">
+                    <option selected>Choose...</option>
+                    <option value="Prospecting">Prospecting</option>
+                    <option value="Lead Qualification">Lead Qualification</option>
+                    <option value="Demo/Meeting">Demo/Meeting</option>
+                    <option value="Proposal">Proposal</option>
+                    <option value="Negotiation">Negotiation</option>
+                    <option value="Closing Deal">Closing Deal</option>
+                    <option value="Retention">Retention</option>
+                </select>
+                <button type="button" class="btn btn-primary my-1" onclick="generateFilteredTable()">Generate Table</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table to display selected lead pipeline information -->
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Lead</th>
+                        <th>Opportunity</th>
+                        <th>Stage</th>
+                    </tr>
+                    </thead>
+                    <tbody id="leadPipelineTableBody">
+                    <!-- Dynamically generated rows will go here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script>
+    // Initialize Charts
+    var dealsRatioCtx = document.getElementById('dealsRatioChart').getContext('2d');
+    var dealsRatioChart = new Chart(dealsRatioCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Open Deals', 'Closed Deals'],
+            datasets: [{
+                data: [60, 40], // Example data
+                backgroundColor: ['#007bff', '#28a745'],
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            }
+        }
+    });
+
+    var customerSatisfactionCtx = document.getElementById('customerSatisfactionChart').getContext('2d');
+    var customerSatisfactionChart = new Chart(customerSatisfactionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Satisfied', 'Unsatisfied'],
+            datasets: [{
+                data: [95, 5], // Example data
+                backgroundColor: ['#007bff', '#dc3545'],
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            }
+        }
+    });
+
+    // Generate customer pipeline table based on selections
+    function generateCustomerTable() {
+        var customer = document.getElementById('customerSelect').value;
+        var opportunity = document.getElementById('customerOpportunitySelect').value;
+        var stage = document.getElementById('customerStageSelect').value;
+
+        if (customer !== "Choose..." && opportunity !== "Choose..." && stage !== "Choose...") {
+            var tableBody = document.getElementById('customerPipelineTableBody');
+            var newRow = tableBody.insertRow();
+            newRow.insertCell(0).innerHTML = customer;
+            newRow.insertCell(1).innerHTML = opportunity;
+            newRow.insertCell(2).innerHTML = stage;
+        } else {
+            alert("Please make a selection for all fields.");
+        }
+    }
+
+    // Generate lead pipeline table based on selections
+    let allLeads = [];
+    let allStages = [];
+
+    // Function to fetch leads and their associated opportunities and pipeline stages
+    function fetchLeads() {
+        fetch('/api/leads')
+            .then(response => response.json())
+            .then(leads => {
+                allLeads = leads;
+
+                // Populate the table with the fetched leads
+                populateLeadPipelineTable(allLeads);
+
+                // Populate the dropdowns for leads and opportunities
+                populateDropdown('leadSelect', allLeads, 'leadName', 'id');
+                populateOpportunityDropdown(allLeads);
+            })
+            .catch(error => {
+                console.error('Error fetching leads:', error);
+            });
+    }
+
+    // Populate a select dropdown with options
+    function populateDropdown(selectId, items, labelKey, valueKey) {
+        const select = document.getElementById(selectId);
+        select.innerHTML = '<option selected>Choose...</option>';
+        items.forEach(item => {
+            const option = document.createElement('option');
+            option.text = item[labelKey];
+            option.value = item[valueKey];
+            select.add(option);
+        });
+    }
+
+
+    // Populate Opportunity dropdown based on the lead data
+    function populateOpportunityDropdown(leads) {
+        const opportunitySelect = document.getElementById('leadOpportunitySelect');
+
+        // Clear existing options
+        opportunitySelect.innerHTML = '<option selected>Choose...</option>';
+
+        // Loop through all leads to populate opportunities dropdown
+        leads.forEach(lead => {
+            if (lead.opportunities && lead.opportunities.length > 0) {
+                lead.opportunities.forEach(opportunity => {
+                    const option = document.createElement('option');
+                    option.text = opportunity.dealName;
+                    option.value = opportunity.id;
+                    opportunitySelect.add(option);
+                });
+            }
+        });
+    }
+
+    // Populate the lead pipeline table
+            function populateLeadPipelineTable(leads) {
+                const tableBody = document.getElementById('leadPipelineTableBody');
+                tableBody.innerHTML = ''; // Clear existing table rows
+
+                leads.forEach(lead => {
+                    const newRow = tableBody.insertRow();
+                    newRow.insertCell(0).innerHTML = lead.leadName;
+                    newRow.insertCell(1).innerHTML = lead.opportunities && lead.opportunities.length > 0
+                        ? lead.opportunities.map(opportunity => opportunity.dealName).join(', ')
+                        : 'N/A';
+                    newRow.insertCell(2).innerHTML = lead.pipelineStage ? lead.pipelineStage.pipelineStageName : 'N/A';
+                });
+            }
+                    // Generate and filter the table based on user selections
+                    function generateFilteredTable() {
+                        const selectedLeadId = document.getElementById('leadSelect').value;
+                        const selectedOpportunityId = document.getElementById('leadOpportunitySelect').value;
+                        const selectedStageId = document.getElementById('leadStageSelect').value;
+
+                        const filteredLeads = allLeads.filter(lead =>
+                            (selectedLeadId === 'Choose...' || lead.id == selectedLeadId) &&
+                            (selectedOpportunityId === 'Choose...' || lead.opportunities.some(op => op.id == selectedOpportunityId)) &&
+                            (selectedStageId === 'Choose...' || lead.pipelineStage && lead.pipelineStage.id == selectedStageId)
+                        );
+
+                        populateLeadPipelineTable(filteredLeads);
+                    }
+
+// Fetch all leads and populate the table when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+                        fetchLeads();
+                    });
+
+    // Function to set the cookie with an expiration date in GMT
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toGMTString();  // Set expiration in GMT format
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+    setCookie("token", "token", 1);  // Setting expiration for 1 day
+
+    document.getElementById('logoutLink').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default anchor behavior
+        // Clear OAuth token from localStorage/sessionStorage
+        localStorage.removeItem('token');  // If token is stored in localStorage
+        sessionStorage.removeItem('token');  // If token is stored in sessionStorage
+
+        // Clear JWT token from cookies
+        document.cookie = "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+
+        // Call the backend logout endpoint
+        fetch('/logout', {
+            method: 'GET',
+            credentials: 'include'  // Make sure the request includes credentials like cookies
+        }).then(response => {
+            // Redirect to the home page or login page after logout
+            window.location.href = '/home';
+        }).catch(error => {
+            console.error('Logout failed', error);
+        });
+    });
+</script>
+</body>
+</html>

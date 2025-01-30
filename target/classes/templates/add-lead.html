@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Lead</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <style>
+        :root {
+            --ethereal-ivory: #E4E4DE;
+            --sophisticated-sage: #C4C5BA;
+            --timeless-noir: #1B1B1B;
+            --muted-moss: #595f39;
+        }
+        body {
+            background-color: var(--ethereal-ivory);
+            color: var(--timeless-noir);
+        }
+        .navbar, .footer {
+            background-color: var(--timeless-noir);
+            color: var(--ethereal-ivory);
+        }
+        .form-container {
+            background-color: var(--sophisticated-sage);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: var(--muted-moss);
+            border-color: var(--muted-moss);
+        }
+        .btn-primary:hover {
+            background-color: var(--timeless-noir);
+            border-color: var(--timeless-noir);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">SimplyCRM</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="form-container">
+        <h1 class="pb-2 border-bottom">Add New Lead</h1>
+        <form id="leadForm">
+            <div class="mb-3">
+                <label for="leadName" class="form-label">Lead Name</label>
+                <input type="text" class="form-control" id="leadName" name="leadName" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="mb-3">
+                <label for="leadSource" class="form-label">Lead Source</label>
+                <input type="text" class="form-control" id="leadSource" name="leadSource" required>
+            </div>
+            <div class="mb-3">
+                <label for="pipelineStage" class="form-label">Pipeline Stage</label>
+                <select class="form-select" id="pipelineStage" name="pipelineStage" required>
+                    <option value="" selected>Select Pipeline Stage</option>
+                    <option th:each="stage : ${pipelineStages}" th:value="${stage.id}" th:text="${stage.pipelineStageName}"></option>
+                </select>
+            </div>
+            <!-- Optional Customer Association -->
+            <div class="mb-3">
+                <label for="customer" class="form-label">Customer (Optional)</label>
+                <select class="form-select" id="customer" name="customer">
+                    <option value="" selected>None</option>
+                    <option th:each="customer : ${customers}" th:value="${customer.id}" th:text="${customer.business_name}"></option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status" required>
+                    <option value="NEW">New</option>
+                    <option value="CONTACTED">Contacted</option>
+                    <option value="QUALIFIED">Qualified</option>
+                    <option value="PROPOSING">Proposing</option>
+                    <option value="NEGOTIATING">Negotiating</option>
+                    <option value="WON">Won</option>
+                    <option value="ONBOARDED">Onboarded</option>
+                    <option value="LOST">Lost</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Lead</button>
+        </form>
+    </div>
+</div>
+
+<footer class="footer text-center mt-auto">
+    <div class="container">
+        <p class="mb-0">&copy;
+            <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+            SimplyCRM
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('leadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const leadData = {
+            leadName: document.getElementById('leadName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            leadSource: document.getElementById('leadSource').value,
+            status: document.getElementById('status').value,
+            customer: document.getElementById('customer').value || null, // Send null if no customer is selected
+            pipelineStage: document.getElementById('pipelineStage').value  // Selected pipeline stage
+        };
+
+        fetch('/api/leads/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(leadData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Lead added successfully');
+                    window.location.href = '/leads';  // Redirect to the leads list page
+                } else {
+                    alert('Error adding lead');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+</body>
+</html>
